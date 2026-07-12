@@ -1,0 +1,25 @@
+# Git
+.git/
+.gitignore
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+venv/
+.env
+
+# Docker
+docker-compose.yml
+Dockerfile
+
+# テスト
+tests/
+
+# Terraform
+infra/
+
+# OS・IDE
+.DS_Store
+Thumbs.db
+.vscode/
