@@ -1,0 +1,17 @@
+services:
+  app:
+    build: .
+    container_name: tigers-notify-app
+    environment:
+      - SNS_TOPIC_ARN=dummy
+    volumes:
+      - ./src:/app/src
+
+  db:
+    image: mysql:8
+    container_name: tigers-notify-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: tigers_db
+    ports:
+      - "3306:3306"
