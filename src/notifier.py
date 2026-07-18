@@ -25,14 +25,40 @@ def build_message(result: dict) -> str:
             f"🎉 *勝利！* 阪神タイガース {result['score']} {result['opponent']}\n"
             f"{home_run_text}"
         )
+
     elif result["status"] == "LOSE":
+        # ホームラン情報を生成
+        home_run_text = ""
+        if result.get("home_runs"):
+            hr_list = [
+                f"　🏠 {hr['player']} {hr['number']}号"
+                for hr in result["home_runs"]
+            ]
+            home_run_text = "\n" + "\n".join(hr_list)
+
         return (
             f"😢 *敗戦...* 阪神タイガース {result['score']} {result['opponent']}\n"
+            f"{home_run_text}"
         )
+
     elif result["status"] == "DRAW":
+        # ホームラン情報を生成
+        home_run_text = ""
+        if result.get("home_runs"):
+            hr_list = [
+                f"　🏠 {hr['player']} {hr['number']}号"
+                for hr in result["home_runs"]
+            ]
+            home_run_text = "\n" + "\n".join(hr_list)
+
         return (
             f"🤝 *引き分け* 阪神タイガース {result['score']} {result['opponent']}\n"
+            f"{home_run_text}"
         )
+
+    elif result["status"] == "IN_PROGRESS":
+        return f"⚾ 試合中です... {result.get('score', '0-0')} vs {result.get('opponent', '対戦相手')}"
+
     else:
         return "📅 本日は試合がありませんでした。"
 
