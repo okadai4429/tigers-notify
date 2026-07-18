@@ -15,7 +15,11 @@ def main():
     result = {
         "status": "WIN",
         "score": "5-2",
-        "opponent": "読売ジャイアンツ"
+        "opponent": "読売ジャイアンツ",
+        "home_runs": [
+            {"player": "大山悠輔", "number": 15},
+            {"player": "佐藤輝明", "number": 23}
+        ]
     }
 
     # メッセージを生成

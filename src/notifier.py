@@ -12,8 +12,18 @@ def build_message(result: dict) -> str:
     """試合結果に応じてメッセージを生成する"""
 
     if result["status"] == "WIN":
+        # ホームラン情報を生成
+        home_run_text = ""
+        if result.get("home_runs"):
+            hr_list = [
+                f"　🏠 {hr['player']} {hr['number']}号"
+                for hr in result["home_runs"]
+            ]
+            home_run_text = "\n" + "\n".join(hr_list)
+
         return (
             f"🎉 *勝利！* 阪神タイガース {result['score']} {result['opponent']}\n"
+            f"{home_run_text}"
         )
     elif result["status"] == "LOSE":
         return (
