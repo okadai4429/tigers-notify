@@ -14,7 +14,7 @@ def build_message(result: dict) -> str:
     if result["status"] == "WIN":
         return (
             f"🎉 *勝利！* 阪神タイガース {result['score']} {result['opponent']}\n"
-            f"六甲おろしに颯々たる⚡ やったぞ！"
+            f"バンザーーイ！！六甲おろしにー颯爽と🐯"
         )
     elif result["status"] == "LOSE":
         return (
