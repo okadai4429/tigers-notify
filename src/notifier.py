@@ -19,7 +19,7 @@ def build_message(result: dict) -> str:
     elif result["status"] == "LOSE":
         return (
             f"😢 *敗戦...* 阪神タイガース {result['score']} {result['opponent']}\n"
-            f"次は頑張れ！ファイト🐯"
+            f"次は勝つ！🐯"
         )
     elif result["status"] == "DRAW":
         return (
