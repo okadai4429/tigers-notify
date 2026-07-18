@@ -14,17 +14,14 @@ def build_message(result: dict) -> str:
     if result["status"] == "WIN":
         return (
             f"🎉 *勝利！* 阪神タイガース {result['score']} {result['opponent']}\n"
-            f"バンザーーイ！！六甲おろしにー颯爽と🐯"
         )
     elif result["status"] == "LOSE":
         return (
             f"😢 *敗戦...* 阪神タイガース {result['score']} {result['opponent']}\n"
-            f"次は勝つ！🐯"
         )
     elif result["status"] == "DRAW":
         return (
             f"🤝 *引き分け* 阪神タイガース {result['score']} {result['opponent']}\n"
-            f"惜しかった！次回に期待！"
         )
     else:
         return "📅 本日は試合がありませんでした。"
