@@ -28,3 +28,18 @@ resource "aws_ecs_task_definition" "main" {
     }
   }])
 }
+
+resource "aws_security_group" "ecs_tasks" {
+  name   = "${var.project_name}-ecs-sg"
+  vpc_id = aws_vpc.main.id
+
+  # アウトバウンド（全許可）
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"  # 全プロトコル
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = { Name = "${var.project_name}-ecs-sg" }
+}
