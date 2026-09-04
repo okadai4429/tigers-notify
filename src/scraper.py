@@ -140,49 +140,43 @@ def get_tigers_result(date_str: str = None) -> dict:
         print(f"❌ エラーが発生しました: {e}")
         return None
 
-
 def get_home_runs(soup) -> list:
+    """ホームラン情報を取得する"""
     home_runs = []
 
     try:
-        hr_tables = soup.find_all("table")
+        import re
+        tables = soup.find_all("table")
 
-        for table in hr_tables:
-            rows = table.find_all("tr")
-            is_hanshin_section = False
+        for table in tables:
+            text = table.get_text(strip=True)
 
-            for row in rows:
-                cells = row.find_all(["th", "td"])
-                if not cells:
-                    continue
+            # 「号」が含まれるテーブルだけホームラン情報
+            if "【阪神】" not in text or "号" not in text:
+                continue
 
-                text = cells[0].get_text(strip=True)
+            # 阪神のホームラン部分を抽出
+            hanshin_match = re.search(
+                r"【阪神】(.+?)(?:【|$)", text
+            )
+            if not hanshin_match:
+                continue
 
-                if "阪神" in text or "Ｔ" in text:
-                    is_hanshin_section = True
-                    continue
+            hanshin_hr_text = hanshin_match.group(1)
 
-                if is_hanshin_section and any(
-                    team in text for team in [
-                        "巨人", "中日", "広島", "ヤクルト", "DeNA",
-                        "横浜", "ソフトバンク", "ロッテ", "楽天",
-                        "日本ハム", "西武", "オリックス"
-                    ]
-                ):
-                    is_hanshin_section = False
-                    continue
+            # "佐藤33号" のパターンを抽出
+            hr_matches = re.findall(
+                r"([^\s、（）]+?)(\d+)号", hanshin_hr_text
+            )
 
-                if is_hanshin_section:
-                    full_text = row.get_text(strip=True)
-                    match = re.search(r"(.+?)(\d+)号", full_text)
-                    if match:
-                        player_name = match.group(1).strip()
-                        hr_number = int(match.group(2))
-                        if player_name and len(player_name) < 10:
-                            home_runs.append({
-                                "player": player_name,
-                                "number": hr_number
-                            })
+            for player_name, hr_number in hr_matches:
+                player_name = player_name.strip()
+                if player_name:
+                    home_runs.append({
+                        "player": player_name,
+                        "number": int(hr_number)
+                    })
+            break
 
     except Exception as e:
         print(f"⚠️ ホームラン情報の取得に失敗しました: {e}")
