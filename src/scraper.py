@@ -118,6 +118,16 @@ def get_tigers_result(date_str: str = None) -> dict:
                 "home_runs": []
             }
 
+        # 試合終了チェック（勝投手の存在確認）
+        page_text = game_soup.get_text()
+        if "勝投手" not in page_text and "引分" not in page_text:
+            print("⚾ 試合中です（勝投手未確定）")
+            return {
+                "status": "IN_PROGRESS",
+                "score": f"{hanshin_score}-{opponent_score}",
+                "opponent": teams[opponent_idx],
+                "home_runs": []
+            }
         if hanshin_score > opponent_score:
             status = "WIN"
         elif hanshin_score < opponent_score:
