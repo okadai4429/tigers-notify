@@ -18,6 +18,20 @@ def get_jst_now():
     return datetime.now(jst)
 
 
+def wait_until_23():
+    """23時まで待機する"""
+    now = get_jst_now()
+    target_hour = 23
+    if now.hour < target_hour:
+        wait_seconds = (
+            (target_hour - now.hour) * 3600
+            - now.minute * 60
+            - now.second
+        )
+        print(f"⏳ {target_hour}時まで {wait_seconds // 60} 分待ちます...")
+        time.sleep(wait_seconds)
+
+
 def main():
     print("🐯 阪神タイガース試合結果通知BOT 起動！")
 
@@ -33,24 +47,16 @@ def main():
 
         print(f"⏱️ 試合状態: {result['status']}")
 
-        # 試合中の場合は5分待って再チェック
+        # 試合中 → 5分待って再チェック
         if result["status"] == "IN_PROGRESS":
             print(f"⚾ 試合中です。{CHECK_INTERVAL // 60}分後に再チェックします...")
             time.sleep(CHECK_INTERVAL)
             elapsed += CHECK_INTERVAL
             continue
 
-        # 試合なしの場合は 23時まで待ってから通知
+        # 試合なし → 23時に通知
         if result["status"] == "NO_GAME":
-            now = get_jst_now()
-            target_hour = 23
-
-            if now.hour < target_hour:
-                wait_seconds = (target_hour - now.hour) * 3600 - now.minute * 60 - now.second
-                print(f"📅 試合なし。{target_hour}時まで {wait_seconds // 60} 分待ちます...")
-                time.sleep(wait_seconds)
-
-            # 23時になったら通知
+            wait_until_23()
             message = build_message(result)
             print(f"メッセージ: {message}")
             success = send_slack_notification(message)
@@ -60,7 +66,19 @@ def main():
             print("✅ BOT 処理完了！")
             return
 
-        # 試合終了（WIN / LOSE / DRAW）の場合はすぐ通知
+        # 雨天中止 → 23時に通知
+        if result["status"] == "CANCELLED":
+            wait_until_23()
+            message = build_message(result)
+            print(f"メッセージ: {message}")
+            success = send_slack_notification(message)
+            if not success:
+                print("❌ 通知に失敗しました")
+                sys.exit(1)
+            print("✅ BOT 処理完了！")
+            return
+
+        # 試合終了（WIN / LOSE / DRAW）→ すぐ通知
         message = build_message(result)
         print(f"メッセージ: {message}")
 

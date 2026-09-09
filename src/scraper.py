@@ -58,6 +58,11 @@ def get_tigers_result(date_str: str = None) -> dict:
             print(f"⚾ 試合中の可能性があります")
             return {"status": "IN_PROGRESS", "score": "", "opponent": "", "home_runs": []}
 
+        # 雨天中止チェック
+        if "中止" in game_response.text or "ノーゲーム" in game_response.text:
+            print("🌧️ 試合が中止されました")
+            return {"status": "CANCELLED", "score": "", "opponent": "", "home_runs": []}
+
         game_soup = BeautifulSoup(game_response.text, "html.parser")
 
         # クラスなしの全テーブルから探す
@@ -85,7 +90,6 @@ def get_tigers_result(date_str: str = None) -> dict:
             if team_cell and score_cells:
                 team_name = team_cell.get_text(strip=True)
                 total_score = score_cells[-3].get_text(strip=True)
-                # 空のチーム名とヘッダー行を除外
                 if team_name and total_score != "計":
                     teams.append(team_name)
                     scores.append(total_score)
@@ -128,6 +132,7 @@ def get_tigers_result(date_str: str = None) -> dict:
                 "opponent": teams[opponent_idx],
                 "home_runs": []
             }
+
         if hanshin_score > opponent_score:
             status = "WIN"
         elif hanshin_score < opponent_score:
@@ -136,7 +141,6 @@ def get_tigers_result(date_str: str = None) -> dict:
             status = "DRAW"
 
         home_runs = get_home_runs(game_soup)
-
         print(f"✅ 試合結果取得成功: {status} {hanshin_score}-{opponent_score}")
 
         return {
@@ -150,34 +154,25 @@ def get_tigers_result(date_str: str = None) -> dict:
         print(f"❌ エラーが発生しました: {e}")
         return None
 
+
 def get_home_runs(soup) -> list:
-    """ホームラン情報を取得する"""
     home_runs = []
 
     try:
-        import re
         tables = soup.find_all("table")
 
         for table in tables:
             text = table.get_text(strip=True)
 
-            # 「号」が含まれるテーブルだけホームラン情報
             if "【阪神】" not in text or "号" not in text:
                 continue
 
-            # 阪神のホームラン部分を抽出
-            hanshin_match = re.search(
-                r"【阪神】(.+?)(?:【|$)", text
-            )
+            hanshin_match = re.search(r"【阪神】(.+?)(?:【|$)", text)
             if not hanshin_match:
                 continue
 
             hanshin_hr_text = hanshin_match.group(1)
-
-            # "佐藤33号" のパターンを抽出
-            hr_matches = re.findall(
-                r"([^\s、（）]+?)(\d+)号", hanshin_hr_text
-            )
+            hr_matches = re.findall(r"([^\s、（）]+?)(\d+)号", hanshin_hr_text)
 
             for player_name, hr_number in hr_matches:
                 player_name = player_name.strip()

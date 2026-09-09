@@ -2,7 +2,6 @@ import os
 import requests
 from dotenv import load_dotenv
 
-# .env ファイルから環境変数を読み込む
 load_dotenv()
 
 SLACK_WEBHOOK_URL = os.getenv("SLACK_WEBHOOK_URL")
@@ -12,7 +11,6 @@ def build_message(result: dict) -> str:
     """試合結果に応じてメッセージを生成する"""
 
     if result["status"] == "WIN":
-        # ホームラン情報を生成
         home_run_text = ""
         if result.get("home_runs"):
             hr_list = [
@@ -20,14 +18,13 @@ def build_message(result: dict) -> str:
                 for hr in result["home_runs"]
             ]
             home_run_text = "\n" + "\n".join(hr_list)
-
         return (
             f"🎉 *勝利！* 阪神タイガース {result['score']} {result['opponent']}\n"
+            f"バンザーーイ！！六甲おろしにー颯爽と🐯"
             f"{home_run_text}"
         )
 
     elif result["status"] == "LOSE":
-        # ホームラン情報を生成
         home_run_text = ""
         if result.get("home_runs"):
             hr_list = [
@@ -35,14 +32,13 @@ def build_message(result: dict) -> str:
                 for hr in result["home_runs"]
             ]
             home_run_text = "\n" + "\n".join(hr_list)
-
         return (
             f"😢 *敗戦...* 阪神タイガース {result['score']} {result['opponent']}\n"
+            f"次は頑張れ！ファイト🐯"
             f"{home_run_text}"
         )
 
     elif result["status"] == "DRAW":
-        # ホームラン情報を生成
         home_run_text = ""
         if result.get("home_runs"):
             hr_list = [
@@ -50,10 +46,16 @@ def build_message(result: dict) -> str:
                 for hr in result["home_runs"]
             ]
             home_run_text = "\n" + "\n".join(hr_list)
-
         return (
             f"🤝 *引き分け* 阪神タイガース {result['score']} {result['opponent']}\n"
+            f"惜しかった！次回に期待！"
             f"{home_run_text}"
+        )
+
+    elif result["status"] == "CANCELLED":
+        return (
+            f"🌧️ 本日の試合は中止になりました。\n"
+            f"次の試合も頑張れ！阪神タイガース🐯"
         )
 
     elif result["status"] == "IN_PROGRESS":
