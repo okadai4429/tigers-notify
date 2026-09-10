@@ -317,22 +317,6 @@ ECS Fargate には `bridge` / `host` / `awsvpc` の3つのネットワークモ�
 - **GitHub Actions**: CI/CD パイプライン / Secrets 管理 / 自動デプロイ
 - **Python**: スクレイピング（requests / BeautifulSoup）/ 正規表現 / 環境変数管理
 
-### 詰まったポイントと解決策
-
-1. **NPB サイトのHTML構造が想定と違った**  
-   → `class="scoreBoard"` が存在せず、全テーブルをループしてテキスト内容で判別する方式に変更
-
-2. **ECS タスクの CloudWatch Logs 権限不足**  
-   → `AmazonECSTaskExecutionRolePolicy` だけでは `logs:CreateLogGroup` が不足。カスタムポリシーを追加
-
-3. **Terraform の変数参照とハードコードの区別**  
-   → `"aws_vpc.main.id"`（文字列）と `aws_vpc.main.id`（参照）の違いを実践で習得
-
-4. **スコアテーブルのヘッダー行の混入**  
-   → `total_score != "計"` の条件でヘッダー行を除外
-
----
-
 ## 🔗 関連リンク
 
 - [NPB 公式サイト](https://npb.jp)
